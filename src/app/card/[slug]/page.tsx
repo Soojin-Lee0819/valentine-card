@@ -100,21 +100,7 @@ export default function CardPage({ params }: { params: Promise<{ slug: string }>
     }
   };
 
-  const handleNo = async () => {
-    try {
-      const res = await fetch(`/api/cards/${slug}/respond`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ response: 'no' }),
-      });
-      if (res.ok) {
-        setResponded(true);
-        setResponse('no');
-      }
-    } catch (err) {
-      console.error(err);
-    }
-  };
+  // No button never actually works - it just keeps escaping!
 
   const escapeNo = useCallback(() => {
     setNoAttempts(prev => prev + 1);
@@ -167,48 +153,35 @@ export default function CardPage({ params }: { params: Promise<{ slug: string }>
     return (
       <main className="min-h-screen bg-[#faf8f5] flex items-center justify-center p-4">
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 text-center max-w-md w-full">
-          {response === 'yes' ? (
+          {card.image_url ? (
             <>
-              {card.image_url ? (
-                <>
-                  <h1 className="font-display text-3xl text-gray-800 mb-2">
-                    I knew you'd say yes
-                  </h1>
-                  <p className="text-gray-500 mb-6">
-                    I'm so happy you're my Valentine
-                  </p>
-                  <img
-                    src={card.image_url}
-                    alt="From your Valentine"
-                    className="w-full max-w-xs mx-auto rounded-xl mb-6"
-                  />
-                  <p className="text-gray-600 italic">
-                    — {card.sender_name}
-                  </p>
-                </>
-              ) : (
-                <>
-                  <div className="w-16 h-16 mx-auto mb-6 rounded-full bg-[#c45c5c]/10 flex items-center justify-center">
-                    <svg className="w-8 h-8 text-[#c45c5c]" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
-                    </svg>
-                  </div>
-                  <h1 className="font-display text-3xl text-gray-800 mb-2">
-                    It's a match!
-                  </h1>
-                  <p className="text-gray-500 mb-4">
-                    {card.sender_name} is going to be so happy
-                  </p>
-                </>
-              )}
+              <h1 className="font-display text-3xl text-gray-800 mb-2">
+                I knew you'd say yes
+              </h1>
+              <p className="text-gray-500 mb-6">
+                I'm so happy you're my Valentine
+              </p>
+              <img
+                src={card.image_url}
+                alt="From your Valentine"
+                className="w-full max-w-xs mx-auto rounded-xl mb-6"
+              />
+              <p className="text-gray-600 italic">
+                — {card.sender_name}
+              </p>
             </>
           ) : (
             <>
-              <h1 className="font-display text-2xl text-gray-700 mb-2">
-                Maybe next time
+              <div className="w-16 h-16 mx-auto mb-6 rounded-full bg-[#c45c5c]/10 flex items-center justify-center">
+                <svg className="w-8 h-8 text-[#c45c5c]" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                </svg>
+              </div>
+              <h1 className="font-display text-3xl text-gray-800 mb-2">
+                It's a match!
               </h1>
-              <p className="text-gray-500">
-                {card.sender_name} will understand.
+              <p className="text-gray-500 mb-4">
+                {card.sender_name} is going to be so happy
               </p>
             </>
           )}
@@ -297,9 +270,9 @@ export default function CardPage({ params }: { params: Promise<{ slug: string }>
             </button>
 
             <button
-              onClick={handleNo}
               onMouseEnter={escapeNo}
               onTouchStart={escapeNo}
+              onClick={escapeNo}
               style={{
                 transform: `translate(${noPosition.x}px, ${noPosition.y}px) scale(${noScale})`,
                 transition: isFlying ? 'transform 0.15s ease-out' : 'transform 0.25s ease-out',

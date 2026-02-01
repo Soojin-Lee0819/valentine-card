@@ -89,7 +89,7 @@ export default function CheckPage({ params }: { params: Promise<{ slug: string }
                 Refresh now
               </button>
             </>
-          ) : card.response === 'yes' ? (
+          ) : (
             <>
               <div className="w-16 h-16 mx-auto mb-6 rounded-full bg-[#c45c5c]/10 flex items-center justify-center">
                 <svg className="w-8 h-8 text-[#c45c5c]" fill="currentColor" viewBox="0 0 24 24">
@@ -101,23 +101,6 @@ export default function CheckPage({ params }: { params: Promise<{ slug: string }
               </h1>
               <p className="text-gray-500 mb-4">
                 {card.recipient_name} will be your Valentine
-              </p>
-              <p className="text-gray-400 text-sm">
-                {new Date(card.responded_at!).toLocaleDateString(undefined, {
-                  month: 'short',
-                  day: 'numeric',
-                  hour: 'numeric',
-                  minute: '2-digit'
-                })}
-              </p>
-            </>
-          ) : (
-            <>
-              <h1 className="font-display text-2xl text-gray-700 mb-2">
-                They said no
-              </h1>
-              <p className="text-gray-500 mb-4">
-                {card.recipient_name} declined.
               </p>
               <p className="text-gray-400 text-sm">
                 {new Date(card.responded_at!).toLocaleDateString(undefined, {
