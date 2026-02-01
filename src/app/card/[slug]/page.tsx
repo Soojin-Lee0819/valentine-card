@@ -22,7 +22,7 @@ function TypewriterText({ text, onComplete }: { text: string; onComplete?: () =>
       const timeout = setTimeout(() => {
         setDisplayedText(prev => prev + text[currentIndex]);
         setCurrentIndex(prev => prev + 1);
-      }, 40 + Math.random() * 30);
+      }, 35 + Math.random() * 25);
       return () => clearTimeout(timeout);
     } else if (onComplete) {
       onComplete();
@@ -33,7 +33,7 @@ function TypewriterText({ text, onComplete }: { text: string; onComplete?: () =>
     <span>
       {displayedText}
       {currentIndex < text.length && (
-        <span className="animate-pulse">|</span>
+        <span className="animate-pulse opacity-60">|</span>
       )}
     </span>
   );
@@ -47,13 +47,11 @@ export default function CardPage({ params }: { params: Promise<{ slug: string }>
   const [responded, setResponded] = useState(false);
   const [response, setResponse] = useState<'yes' | 'no' | null>(null);
 
-  // Card opening states
   const [isEnvelopeOpen, setIsEnvelopeOpen] = useState(false);
   const [showCard, setShowCard] = useState(false);
   const [showMessage, setShowMessage] = useState(false);
   const [showButtons, setShowButtons] = useState(false);
 
-  // No button escape mechanics
   const [noScale, setNoScale] = useState(1);
   const [noPosition, setNoPosition] = useState({ x: 0, y: 0 });
   const [noAttempts, setNoAttempts] = useState(0);
@@ -82,8 +80,8 @@ export default function CardPage({ params }: { params: Promise<{ slug: string }>
 
   const openEnvelope = () => {
     setIsEnvelopeOpen(true);
-    setTimeout(() => setShowCard(true), 600);
-    setTimeout(() => setShowMessage(true), 1200);
+    setTimeout(() => setShowCard(true), 500);
+    setTimeout(() => setShowMessage(true), 1000);
   };
 
   const handleYes = async () => {
@@ -139,28 +137,27 @@ export default function CardPage({ params }: { params: Promise<{ slug: string }>
     if (!isFlying) return;
     const interval = setInterval(() => {
       setNoPosition({
-        x: (Math.random() - 0.5) * 200,
-        y: (Math.random() - 0.5) * 150,
+        x: (Math.random() - 0.5) * 180,
+        y: (Math.random() - 0.5) * 120,
       });
-    }, 250);
+    }, 200);
     return () => clearInterval(interval);
   }, [isFlying]);
 
   if (loading) {
     return (
-      <main className="min-h-screen bg-gradient-to-br from-pink-100 via-red-50 to-pink-200 flex items-center justify-center">
-        <div className="font-caveat text-3xl text-pink-600 animate-pulse">Loading your letter...</div>
+      <main className="min-h-screen bg-[#faf8f5] flex items-center justify-center">
+        <div className="text-gray-400">Loading...</div>
       </main>
     );
   }
 
   if (error || !card) {
     return (
-      <main className="min-h-screen bg-gradient-to-br from-pink-100 via-red-50 to-pink-200 flex items-center justify-center p-4">
-        <div className="bg-white rounded-3xl shadow-2xl p-8 border-4 border-pink-300 text-center">
-          <div className="text-6xl mb-4">💔</div>
-          <h1 className="font-caveat text-3xl text-gray-700">Letter not found</h1>
-          <p className="font-patrick text-gray-500 mt-2">This letter may have been lost in the mail...</p>
+      <main className="min-h-screen bg-[#faf8f5] flex items-center justify-center p-4">
+        <div className="text-center">
+          <h1 className="font-display text-2xl text-gray-700 mb-2">Card not found</h1>
+          <p className="text-gray-500">This card may no longer exist.</p>
         </div>
       </main>
     );
@@ -168,59 +165,49 @@ export default function CardPage({ params }: { params: Promise<{ slug: string }>
 
   if (responded) {
     return (
-      <main className="min-h-screen bg-gradient-to-br from-pink-100 via-red-50 to-pink-200 flex items-center justify-center p-4">
-        <div className="bg-white rounded-3xl shadow-2xl p-8 border-4 border-pink-300 text-center max-w-md">
+      <main className="min-h-screen bg-[#faf8f5] flex items-center justify-center p-4">
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 text-center max-w-md w-full">
           {response === 'yes' ? (
             <>
               {card.image_url ? (
                 <>
-                  <div className="text-4xl mb-4 animate-bounce">💕</div>
-                  <h1 className="font-caveat text-4xl text-pink-600 mb-4">
-                    I knew you&apos;d say yes!
+                  <h1 className="font-display text-3xl text-gray-800 mb-2">
+                    I knew you'd say yes
                   </h1>
-                  <p className="font-patrick text-lg text-gray-600 mb-6">
-                    I&apos;m so excited you&apos;re my Valentine!
+                  <p className="text-gray-500 mb-6">
+                    I'm so happy you're my Valentine
                   </p>
-                  <div className="relative mb-6">
-                    <img
-                      src={card.image_url}
-                      alt="Surprise from your Valentine"
-                      className="w-full max-w-xs mx-auto rounded-2xl border-4 border-pink-200 shadow-lg"
-                    />
-                    <div className="absolute -top-3 -right-3 text-3xl animate-bounce">💝</div>
-                    <div className="absolute -bottom-3 -left-3 text-3xl animate-bounce" style={{animationDelay: '150ms'}}>💖</div>
-                  </div>
-                  <p className="font-caveat text-2xl text-pink-500">
-                    ~ with love from {card.sender_name} ~
+                  <img
+                    src={card.image_url}
+                    alt="From your Valentine"
+                    className="w-full max-w-xs mx-auto rounded-xl mb-6"
+                  />
+                  <p className="text-gray-600 italic">
+                    — {card.sender_name}
                   </p>
                 </>
               ) : (
                 <>
-                  <div className="text-8xl mb-6 animate-bounce">💕</div>
-                  <h1 className="font-caveat text-5xl text-pink-600 mb-4">
-                    Yay! It&apos;s a match!
-                  </h1>
-                  <p className="font-patrick text-xl text-gray-600 mb-4">
-                    I knew you&apos;d say yes!
-                  </p>
-                  <p className="font-caveat text-2xl text-pink-500 mb-6">
-                    {card.sender_name} is so happy right now!
-                  </p>
-                  <div className="text-6xl flex justify-center gap-2">
-                    <span className="animate-bounce" style={{animationDelay: '0ms'}}>🎉</span>
-                    <span className="animate-bounce" style={{animationDelay: '100ms'}}>💖</span>
-                    <span className="animate-bounce" style={{animationDelay: '200ms'}}>🎉</span>
+                  <div className="w-16 h-16 mx-auto mb-6 rounded-full bg-[#c45c5c]/10 flex items-center justify-center">
+                    <svg className="w-8 h-8 text-[#c45c5c]" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                    </svg>
                   </div>
+                  <h1 className="font-display text-3xl text-gray-800 mb-2">
+                    It's a match!
+                  </h1>
+                  <p className="text-gray-500 mb-4">
+                    {card.sender_name} is going to be so happy
+                  </p>
                 </>
               )}
             </>
           ) : (
             <>
-              <div className="text-8xl mb-6">💔</div>
-              <h1 className="font-caveat text-4xl text-gray-600 mb-4">
-                Maybe next time...
+              <h1 className="font-display text-2xl text-gray-700 mb-2">
+                Maybe next time
               </h1>
-              <p className="font-patrick text-gray-500">
+              <p className="text-gray-500">
                 {card.sender_name} will understand.
               </p>
             </>
@@ -230,43 +217,34 @@ export default function CardPage({ params }: { params: Promise<{ slug: string }>
     );
   }
 
-  // Envelope view (before opening)
+  // Envelope view
   if (!isEnvelopeOpen) {
     return (
-      <main className="min-h-screen bg-gradient-to-br from-pink-100 via-red-50 to-pink-200 flex items-center justify-center p-4">
+      <main className="min-h-screen bg-[#faf8f5] flex items-center justify-center p-4">
         <div className="text-center">
-          <p className="font-caveat text-2xl text-pink-500 mb-6 animate-pulse">
-            You&apos;ve received a letter...
-          </p>
+          <p className="text-gray-500 mb-6">You've received a card</p>
 
-          {/* Envelope */}
           <button
             onClick={openEnvelope}
             className="group relative cursor-pointer transition-transform hover:scale-105 active:scale-95"
           >
-            {/* Envelope body */}
-            <div className="w-72 h-48 bg-gradient-to-br from-pink-200 to-pink-300 rounded-lg shadow-2xl border-4 border-pink-400 relative overflow-hidden">
-              {/* Envelope flap */}
-              <div className="absolute top-0 left-0 right-0 h-24 bg-gradient-to-br from-pink-300 to-pink-400 origin-top transform transition-transform group-hover:rotate-x-12"
-                style={{
-                  clipPath: 'polygon(0 0, 50% 100%, 100% 0)',
-                }}
+            <div className="w-72 h-44 bg-gradient-to-br from-[#e8d4d4] to-[#d4c4c4] rounded-lg shadow-lg relative overflow-hidden">
+              <div
+                className="absolute top-0 left-0 right-0 h-20 bg-gradient-to-br from-[#d4c4c4] to-[#c4b4b4] origin-top"
+                style={{ clipPath: 'polygon(0 0, 50% 100%, 100% 0)' }}
               />
-
-              {/* Heart seal */}
-              <div className="absolute top-12 left-1/2 -translate-x-1/2 text-4xl z-10 group-hover:animate-bounce">
-                💝
+              <div className="absolute top-10 left-1/2 -translate-x-1/2 w-8 h-8 rounded-full bg-[#c45c5c] flex items-center justify-center">
+                <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                </svg>
               </div>
-
-              {/* To label */}
-              <div className="absolute bottom-6 left-0 right-0 text-center">
-                <p className="font-patrick text-pink-700 text-sm">To:</p>
-                <p className="font-caveat text-2xl text-pink-800">{card.recipient_name}</p>
+              <div className="absolute bottom-5 left-0 right-0 text-center">
+                <p className="text-sm text-gray-600">To:</p>
+                <p className="font-display text-xl text-gray-800">{card.recipient_name}</p>
               </div>
             </div>
-
-            <p className="font-patrick text-pink-600 mt-4 group-hover:text-pink-700">
-              ~ tap to open ~
+            <p className="text-gray-400 text-sm mt-4 group-hover:text-gray-600 transition-colors">
+              Tap to open
             </p>
           </button>
         </div>
@@ -274,37 +252,23 @@ export default function CardPage({ params }: { params: Promise<{ slug: string }>
     );
   }
 
-  // Card view (after opening)
+  // Card view
   return (
-    <main className="min-h-screen bg-gradient-to-br from-pink-100 via-red-50 to-pink-200 flex items-center justify-center p-4 overflow-hidden">
+    <main className="min-h-screen bg-[#faf8f5] flex items-center justify-center p-4 overflow-hidden">
       <div
-        className={`w-full max-w-md transition-all duration-700 ${
-          showCard ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
+        className={`w-full max-w-md transition-all duration-500 ${
+          showCard ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
         }`}
       >
-        {/* Letter/Card */}
-        <div className="bg-[#fffef5] rounded-lg shadow-2xl p-8 relative border-2 border-pink-200"
-          style={{
-            backgroundImage: `repeating-linear-gradient(transparent, transparent 31px, #f9d5d5 31px, #f9d5d5 32px)`,
-          }}
-        >
-          {/* Paper texture overlay */}
-          <div className="absolute inset-0 opacity-5 pointer-events-none"
-            style={{
-              backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`,
-            }}
-          />
-
-          {/* To section */}
-          <div className="mb-6">
-            <p className="font-patrick text-pink-400 text-lg">To:</p>
-            <p className="font-caveat text-4xl text-pink-600 ml-4">{card.recipient_name}</p>
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
+          <div className="mb-4">
+            <p className="text-sm text-gray-400">To</p>
+            <p className="font-display text-2xl text-gray-800">{card.recipient_name}</p>
           </div>
 
-          {/* Message */}
-          <div className="min-h-[200px] mb-6 relative">
+          <div className="min-h-[180px] mb-6 py-4 border-t border-b border-gray-100">
             {showMessage && (
-              <p className="font-caveat text-2xl text-gray-700 leading-relaxed">
+              <p className="font-handwritten text-2xl text-gray-700 leading-relaxed">
                 <TypewriterText
                   text={card.message}
                   onComplete={() => setShowButtons(true)}
@@ -313,55 +277,42 @@ export default function CardPage({ params }: { params: Promise<{ slug: string }>
             )}
           </div>
 
-          {/* From section */}
-          <div className="text-right mb-8">
-            <p className="font-patrick text-pink-400 text-lg">From:</p>
-            <p className="font-caveat text-3xl text-pink-600 mr-4">{card.sender_name}</p>
+          <div className="text-right">
+            <p className="text-sm text-gray-400">From</p>
+            <p className="font-display text-xl text-gray-800">{card.sender_name}</p>
           </div>
-
-          {/* Decorative elements */}
-          <div className="absolute top-4 right-4 text-2xl opacity-30">💕</div>
-          <div className="absolute bottom-4 left-4 text-2xl opacity-30">💕</div>
         </div>
 
-        {/* Response buttons */}
         <div
           className={`mt-8 transition-all duration-500 ${
-            showButtons ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
+            showButtons ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4 pointer-events-none'
           }`}
         >
-          <div className="flex justify-center items-center gap-6 relative min-h-[80px]">
-            {/* Yes button */}
+          <div className="flex justify-center items-center gap-4 relative min-h-[60px]">
             <button
               onClick={handleYes}
-              className="px-8 py-4 bg-pink-500 hover:bg-pink-600 text-white text-xl font-caveat rounded-full transition-all transform hover:scale-110 shadow-lg hover:shadow-xl border-2 border-pink-600"
+              className="px-8 py-3 bg-[#c45c5c] hover:bg-[#b54d4d] text-white rounded-full font-medium transition-colors"
             >
               Yes
             </button>
 
-            {/* No button - similar look but escapes */}
             <button
               onClick={handleNo}
               onMouseEnter={escapeNo}
               onTouchStart={escapeNo}
               style={{
                 transform: `translate(${noPosition.x}px, ${noPosition.y}px) scale(${noScale})`,
-                transition: isFlying ? 'transform 0.15s ease-out' : 'transform 0.3s ease-out',
+                transition: isFlying ? 'transform 0.15s ease-out' : 'transform 0.25s ease-out',
               }}
-              className="px-8 py-4 bg-gray-200 hover:bg-gray-300 text-gray-500 text-xl font-caveat rounded-full transition-colors shadow-lg border-2 border-gray-300"
+              className="px-8 py-3 bg-gray-200 hover:bg-gray-300 text-gray-500 rounded-full font-medium transition-colors"
             >
               No
             </button>
           </div>
 
-          {noAttempts > 0 && noAttempts < 4 && (
-            <p className="text-center font-caveat text-xl text-pink-500 mt-4 animate-pulse">
-              are you sure...? 🥺
-            </p>
-          )}
-          {noAttempts >= 4 && (
-            <p className="text-center font-caveat text-xl text-pink-500 mt-4 animate-bounce">
-              just say yes already~ 💕
+          {noAttempts > 2 && noAttempts < 6 && (
+            <p className="text-center text-gray-400 text-sm mt-4">
+              Having trouble?
             </p>
           )}
         </div>

@@ -35,7 +35,6 @@ export default function CheckPage({ params }: { params: Promise<{ slug: string }
 
   useEffect(() => {
     fetchCard();
-    // Poll every 10 seconds if no response yet
     const interval = setInterval(() => {
       if (!card?.response) {
         fetchCard();
@@ -47,92 +46,98 @@ export default function CheckPage({ params }: { params: Promise<{ slug: string }
 
   if (loading) {
     return (
-      <main className="min-h-screen bg-gradient-to-br from-pink-100 via-red-100 to-pink-200 flex items-center justify-center">
-        <div className="text-2xl text-pink-600 animate-pulse">Loading...</div>
+      <main className="min-h-screen bg-[#faf8f5] flex items-center justify-center">
+        <div className="text-gray-400">Loading...</div>
       </main>
     );
   }
 
   if (error || !card) {
     return (
-      <main className="min-h-screen bg-gradient-to-br from-pink-100 via-red-100 to-pink-200 flex items-center justify-center p-4">
-        <div className="bg-white rounded-3xl shadow-2xl p-8 border-4 border-pink-300 text-center">
-          <div className="text-6xl mb-4">💔</div>
-          <h1 className="text-2xl font-bold text-gray-700">Card not found</h1>
+      <main className="min-h-screen bg-[#faf8f5] flex items-center justify-center p-4">
+        <div className="text-center">
+          <h1 className="font-display text-2xl text-gray-700 mb-2">Card not found</h1>
         </div>
       </main>
     );
   }
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-pink-100 via-red-100 to-pink-200 flex items-center justify-center p-4">
+    <main className="min-h-screen bg-[#faf8f5] flex items-center justify-center p-4">
       <div className="w-full max-w-md">
-        <div className="bg-white rounded-3xl shadow-2xl p-8 border-4 border-pink-300">
-          <div className="text-center">
-            {card.response === null ? (
-              <>
-                <div className="text-6xl mb-6 animate-pulse">💌</div>
-                <h1 className="text-2xl font-bold text-pink-600 mb-4">
-                  Waiting for a response...
-                </h1>
-                <p className="text-gray-600 mb-2">
-                  Your card to <span className="font-semibold">{card.recipient_name}</span>
-                </p>
-                <p className="text-gray-500 text-sm mb-6">
-                  This page auto-refreshes every 10 seconds
-                </p>
-                <div className="flex justify-center gap-2 mb-6">
-                  <div className="w-3 h-3 bg-pink-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
-                  <div className="w-3 h-3 bg-pink-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
-                  <div className="w-3 h-3 bg-pink-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
-                </div>
-                <button
-                  onClick={fetchCard}
-                  className="px-6 py-3 bg-pink-500 text-white rounded-xl hover:bg-pink-600 transition-colors font-medium"
-                >
-                  Refresh Now
-                </button>
-              </>
-            ) : card.response === 'yes' ? (
-              <>
-                <div className="text-8xl mb-6 animate-bounce">💕</div>
-                <h1 className="text-3xl font-bold text-pink-600 mb-4">
-                  They said YES!
-                </h1>
-                <p className="text-gray-600 text-lg mb-4">
-                  {card.recipient_name} will be your Valentine!
-                </p>
-                <div className="text-5xl mb-6">
-                  🎉💖🎉
-                </div>
-                <p className="text-gray-400 text-sm">
-                  Responded {new Date(card.responded_at!).toLocaleString()}
-                </p>
-              </>
-            ) : (
-              <>
-                <div className="text-8xl mb-6">💔</div>
-                <h1 className="text-3xl font-bold text-gray-600 mb-4">
-                  They said no...
-                </h1>
-                <p className="text-gray-500 mb-4">
-                  {card.recipient_name} declined. There are plenty of fish in the sea!
-                </p>
-                <p className="text-gray-400 text-sm">
-                  Responded {new Date(card.responded_at!).toLocaleString()}
-                </p>
-              </>
-            )}
-          </div>
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 text-center">
+          {card.response === null ? (
+            <>
+              <div className="w-16 h-16 mx-auto mb-6 rounded-full bg-gray-100 flex items-center justify-center">
+                <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <h1 className="font-display text-2xl text-gray-800 mb-2">
+                Waiting for response
+              </h1>
+              <p className="text-gray-500 mb-1">
+                Your card to <span className="font-medium">{card.recipient_name}</span>
+              </p>
+              <p className="text-gray-400 text-sm mb-6">
+                This page refreshes automatically
+              </p>
+              <button
+                onClick={fetchCard}
+                className="px-6 py-2.5 border border-gray-200 text-gray-600 rounded-full hover:bg-gray-50 transition-colors text-sm font-medium"
+              >
+                Refresh now
+              </button>
+            </>
+          ) : card.response === 'yes' ? (
+            <>
+              <div className="w-16 h-16 mx-auto mb-6 rounded-full bg-[#c45c5c]/10 flex items-center justify-center">
+                <svg className="w-8 h-8 text-[#c45c5c]" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                </svg>
+              </div>
+              <h1 className="font-display text-3xl text-gray-800 mb-2">
+                They said yes!
+              </h1>
+              <p className="text-gray-500 mb-4">
+                {card.recipient_name} will be your Valentine
+              </p>
+              <p className="text-gray-400 text-sm">
+                {new Date(card.responded_at!).toLocaleDateString(undefined, {
+                  month: 'short',
+                  day: 'numeric',
+                  hour: 'numeric',
+                  minute: '2-digit'
+                })}
+              </p>
+            </>
+          ) : (
+            <>
+              <h1 className="font-display text-2xl text-gray-700 mb-2">
+                They said no
+              </h1>
+              <p className="text-gray-500 mb-4">
+                {card.recipient_name} declined.
+              </p>
+              <p className="text-gray-400 text-sm">
+                {new Date(card.responded_at!).toLocaleDateString(undefined, {
+                  month: 'short',
+                  day: 'numeric',
+                  hour: 'numeric',
+                  minute: '2-digit'
+                })}
+              </p>
+            </>
+          )}
+        </div>
 
-          <div className="mt-8 pt-6 border-t-2 border-pink-100">
-            <Link
-              href="/"
-              className="block w-full py-3 text-center border-2 border-pink-300 text-pink-600 font-medium rounded-xl hover:bg-pink-50 transition-colors"
-            >
-              Create Another Card
-            </Link>
-          </div>
+        <div className="mt-6 text-center">
+          <Link
+            href="/"
+            className="text-gray-400 hover:text-gray-600 transition-colors text-sm"
+          >
+            Create another card
+          </Link>
         </div>
       </div>
     </main>

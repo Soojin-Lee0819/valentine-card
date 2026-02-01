@@ -1,27 +1,22 @@
 @import "tailwindcss";
 
 :root {
-  --background: #fff5f5;
-  --foreground: #4a4a4a;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-caveat: var(--font-caveat);
-  --font-patrick: var(--font-patrick);
+  --background: #faf8f5;
+  --foreground: #2d2d2d;
+  --accent: #c45c5c;
+  --accent-light: #e8d4d4;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-patrick), cursive;
+  font-family: var(--font-dm-sans), system-ui, sans-serif;
 }
 
-.font-caveat {
+.font-display {
+  font-family: var(--font-playfair), Georgia, serif;
+}
+
+.font-handwritten {
   font-family: var(--font-caveat), cursive;
-}
-
-.font-patrick {
-  font-family: var(--font-patrick), cursive;
 }

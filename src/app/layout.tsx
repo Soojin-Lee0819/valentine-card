@@ -1,21 +1,25 @@
 import type { Metadata } from "next";
-import { Caveat, Patrick_Hand } from "next/font/google";
+import { Playfair_Display, DM_Sans, Caveat } from "next/font/google";
 import "./globals.css";
+
+const playfair = Playfair_Display({
+  variable: "--font-playfair",
+  subsets: ["latin"],
+});
+
+const dmSans = DM_Sans({
+  variable: "--font-dm-sans",
+  subsets: ["latin"],
+});
 
 const caveat = Caveat({
   variable: "--font-caveat",
   subsets: ["latin"],
 });
 
-const patrickHand = Patrick_Hand({
-  variable: "--font-patrick",
-  weight: "400",
-  subsets: ["latin"],
-});
-
 export const metadata: Metadata = {
-  title: "Valentine's Card - Will You Be My Valentine?",
-  description: "Create and share a special Valentine's Day card with someone you love!",
+  title: "Valentine's Card",
+  description: "Create and share a special Valentine's Day card",
 };
 
 export default function RootLayout({
@@ -26,7 +30,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${caveat.variable} ${patrickHand.variable} antialiased`}
+        className={`${playfair.variable} ${dmSans.variable} ${caveat.variable} antialiased`}
       >
         {children}
       </body>
