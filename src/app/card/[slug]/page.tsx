@@ -8,6 +8,7 @@ type Card = {
   sender_name: string;
   recipient_name: string;
   message: string;
+  image_url: string | null;
   response: 'yes' | 'no' | null;
   responded_at: string | null;
 };
@@ -171,18 +172,47 @@ export default function CardPage({ params }: { params: Promise<{ slug: string }>
         <div className="bg-white rounded-3xl shadow-2xl p-8 border-4 border-pink-300 text-center max-w-md">
           {response === 'yes' ? (
             <>
-              <div className="text-8xl mb-6 animate-bounce">💕</div>
-              <h1 className="font-caveat text-5xl text-pink-600 mb-4">
-                Yay! It&apos;s a match!
-              </h1>
-              <p className="font-patrick text-xl text-gray-600">
-                {card.sender_name} is going to be so happy!
-              </p>
-              <div className="mt-8 text-6xl flex justify-center gap-2">
-                <span className="animate-bounce" style={{animationDelay: '0ms'}}>🎉</span>
-                <span className="animate-bounce" style={{animationDelay: '100ms'}}>💖</span>
-                <span className="animate-bounce" style={{animationDelay: '200ms'}}>🎉</span>
-              </div>
+              {card.image_url ? (
+                <>
+                  <div className="text-4xl mb-4 animate-bounce">💕</div>
+                  <h1 className="font-caveat text-4xl text-pink-600 mb-4">
+                    I knew you&apos;d say yes!
+                  </h1>
+                  <p className="font-patrick text-lg text-gray-600 mb-6">
+                    I&apos;m so excited you&apos;re my Valentine!
+                  </p>
+                  <div className="relative mb-6">
+                    <img
+                      src={card.image_url}
+                      alt="Surprise from your Valentine"
+                      className="w-full max-w-xs mx-auto rounded-2xl border-4 border-pink-200 shadow-lg"
+                    />
+                    <div className="absolute -top-3 -right-3 text-3xl animate-bounce">💝</div>
+                    <div className="absolute -bottom-3 -left-3 text-3xl animate-bounce" style={{animationDelay: '150ms'}}>💖</div>
+                  </div>
+                  <p className="font-caveat text-2xl text-pink-500">
+                    ~ with love from {card.sender_name} ~
+                  </p>
+                </>
+              ) : (
+                <>
+                  <div className="text-8xl mb-6 animate-bounce">💕</div>
+                  <h1 className="font-caveat text-5xl text-pink-600 mb-4">
+                    Yay! It&apos;s a match!
+                  </h1>
+                  <p className="font-patrick text-xl text-gray-600 mb-4">
+                    I knew you&apos;d say yes!
+                  </p>
+                  <p className="font-caveat text-2xl text-pink-500 mb-6">
+                    {card.sender_name} is so happy right now!
+                  </p>
+                  <div className="text-6xl flex justify-center gap-2">
+                    <span className="animate-bounce" style={{animationDelay: '0ms'}}>🎉</span>
+                    <span className="animate-bounce" style={{animationDelay: '100ms'}}>💖</span>
+                    <span className="animate-bounce" style={{animationDelay: '200ms'}}>🎉</span>
+                  </div>
+                </>
+              )}
             </>
           ) : (
             <>

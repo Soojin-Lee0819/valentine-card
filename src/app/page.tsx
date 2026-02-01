@@ -100,8 +100,27 @@ export default function Home() {
   const [senderName, setSenderName] = useState('');
   const [recipientName, setRecipientName] = useState('');
   const [message, setMessage] = useState('');
+  const [image, setImage] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) {
+        setError('Image must be less than 5MB');
+        return;
+      }
+      setImage(file);
+      setImagePreview(URL.createObjectURL(file));
+    }
+  };
+
+  const removeImage = () => {
+    setImage(null);
+    setImagePreview(null);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -109,10 +128,17 @@ export default function Home() {
     setError('');
 
     try {
+      const formData = new FormData();
+      formData.append('senderName', senderName);
+      formData.append('recipientName', recipientName);
+      formData.append('message', message);
+      if (image) {
+        formData.append('image', image);
+      }
+
       const response = await fetch('/api/cards', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ senderName, recipientName, message }),
+        body: formData,
       });
 
       if (!response.ok) {
@@ -220,6 +246,46 @@ export default function Home() {
               <p className="font-patrick text-sm text-pink-300 mt-1 text-right">
                 {message.length}/500
               </p>
+            </div>
+
+            {/* Optional Image Upload */}
+            <div>
+              <label className="block font-patrick text-lg text-pink-600 mb-2">
+                Surprise Photo <span className="text-pink-300 text-sm">(optional)</span>
+              </label>
+              <p className="font-patrick text-sm text-gray-400 mb-2">
+                Add a photo to reveal when they say yes!
+              </p>
+
+              {imagePreview ? (
+                <div className="relative inline-block">
+                  <img
+                    src={imagePreview}
+                    alt="Preview"
+                    className="w-32 h-32 object-cover rounded-2xl border-4 border-pink-200"
+                  />
+                  <button
+                    type="button"
+                    onClick={removeImage}
+                    className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full text-sm hover:bg-red-600 transition-colors"
+                  >
+                    x
+                  </button>
+                </div>
+              ) : (
+                <label className="block cursor-pointer">
+                  <div className="w-full py-6 border-3 border-dashed border-pink-200 rounded-2xl text-center hover:border-pink-400 hover:bg-pink-50/50 transition-colors">
+                    <span className="text-3xl">📷</span>
+                    <p className="font-patrick text-pink-400 mt-2">tap to add photo</p>
+                  </div>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageChange}
+                    className="hidden"
+                  />
+                </label>
+              )}
             </div>
 
             {error && (

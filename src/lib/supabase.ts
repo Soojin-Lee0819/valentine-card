@@ -11,6 +11,7 @@ export type Card = {
   sender_name: string;
   recipient_name: string;
   message: string;
+  image_url: string | null;
   response: 'yes' | 'no' | null;
   responded_at: string | null;
   created_at: string;
