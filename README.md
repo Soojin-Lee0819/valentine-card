@@ -1,36 +1,96 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Valentine's Card
+
+Create a valentine's card with a twist — the "No" button is impossible to click.
+
+<p align="center">
+  <a href="https://valentine-card-app-psi.vercel.app">
+    <img src="https://img.shields.io/badge/Try%20It%20Out-Live%20Demo-c45c5c?style=for-the-badge" alt="Live Demo" />
+  </a>
+</p>
+
+---
+
+## How It Works
+
+1. **Write a message** — Create a heartfelt card for someone special
+2. **Add a photo** (optional) — Revealed when they say yes
+3. **Share the link** — Send it to your valentine
+4. **They open it** — Beautiful envelope animation reveals your message
+5. **They try to click No** — The button shrinks and runs away
+6. **They click Yes** — Because there's no other option
+
+## Features
+
+- Clean, minimal design
+- Step-by-step card creation
+- Skippable onboarding demo
+- Envelope opening animation
+- Typewriter text effect
+- Escaping "No" button (impossible to click!)
+- Optional surprise photo reveal
+- Response tracking
+
+## Tech Stack
+
+- **Framework**: Next.js 14 + TypeScript
+- **Styling**: Tailwind CSS
+- **Database**: Supabase
+- **Hosting**: Vercel
 
 ## Getting Started
 
-First, run the development server:
+### 1. Clone and install
+
+```bash
+git clone https://github.com/Soojin-Lee0819/valentine-card.git
+cd valentine-card
+npm install
+```
+
+### 2. Set up Supabase
+
+Create a project at [supabase.com](https://supabase.com) and run this SQL:
+
+```sql
+CREATE TABLE cards (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  slug TEXT UNIQUE NOT NULL,
+  sender_name TEXT NOT NULL,
+  recipient_name TEXT NOT NULL,
+  message TEXT NOT NULL,
+  image_url TEXT,
+  response TEXT CHECK (response IN ('yes', 'no')),
+  responded_at TIMESTAMPTZ,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+ALTER TABLE cards ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Allow all" ON cards FOR ALL USING (true);
+```
+
+Create a public storage bucket named `images` for photo uploads.
+
+### 3. Configure environment
+
+Create `.env.local`:
+
+```
+NEXT_PUBLIC_SUPABASE_URL=your_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_key
+```
+
+### 4. Run locally
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [localhost:3000](http://localhost:3000)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Deploy
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/Soojin-Lee0819/valentine-card)
 
-## Learn More
+---
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Made for Valentine's Day
