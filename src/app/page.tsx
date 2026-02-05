@@ -195,7 +195,7 @@ function CardForm() {
 
   return (
     <main className="min-h-screen bg-[#5c1a1a] flex items-center justify-center p-4">
-      <div className={`w-full transition-all ${step === 2 ? 'max-w-3xl' : 'max-w-md'}`}>
+      <div className="w-full max-w-md">
         {/* Progress */}
         <div className="flex items-center justify-center mb-10">
           {[1, 2].map((s) => (
@@ -269,49 +269,36 @@ function CardForm() {
               Write your message
             </h1>
             <p className="text-[#f5f0e8]/60 text-center mb-8">
-              "Will you be my valentine?" is already on the card
+              Click the card to type your message
             </p>
 
-            {/* Side by side layout on desktop */}
-            <div className="flex flex-col md:flex-row gap-6 md:items-start">
-              {/* Message input - left side */}
-              <div className="flex-1 order-2 md:order-1">
-                <div className="bg-[#f5f0e8] rounded-sm p-4 md:p-6 shadow-lg">
-                  <textarea
-                    value={message}
-                    onChange={(e) => setMessage(e.target.value)}
-                    placeholder="Write something from the heart..."
-                    maxLength={500}
-                    rows={6}
-                    className="w-full px-4 py-3 rounded-sm border border-[#d4c4b0] focus:border-[#5c1a1a] focus:ring-1 focus:ring-[#5c1a1a] focus:outline-none transition-colors resize-none bg-white text-[#5c1a1a] font-handwritten text-lg"
-                  />
-                  <p className="text-xs text-[#8b6b5c] mt-2 text-right">
-                    {message.length}/500
-                  </p>
+            {/* Editable card preview */}
+            <div className="max-w-md mx-auto">
+              <div className="bg-[#f5f0e8] rounded-sm p-5 md:p-6 shadow-2xl">
+                <div className="border border-[#d4c4b0]/50 rounded-sm p-5 md:p-6">
+                  <div className="text-center min-h-[120px] flex items-center justify-center">
+                    <textarea
+                      value={message}
+                      onChange={(e) => setMessage(e.target.value)}
+                      placeholder="Write something from the heart..."
+                      maxLength={500}
+                      rows={4}
+                      className="w-full text-center font-handwritten text-xl md:text-2xl text-[#5c1a1a] leading-relaxed bg-transparent border-none focus:outline-none focus:ring-0 resize-none placeholder:text-[#5c1a1a]/30"
+                    />
+                  </div>
+                  <div className="mt-4 pt-4 border-t border-[#d4c4b0]/40 text-center">
+                    <p className="text-[#8b6b5c] text-xs tracking-[0.2em] uppercase">from {senderName}</p>
+                    <p className="font-display text-lg text-[#5c1a1a] mt-1">to {recipientName}</p>
+                  </div>
                 </div>
+                <p className="text-xs text-[#8b6b5c] mt-3 text-right">{message.length}/500</p>
               </div>
 
-              {/* Live preview card - right side */}
-              <div className="flex-1 order-1 md:order-2">
-                <div className="bg-[#f5f0e8] rounded-sm p-4 md:p-5 shadow-2xl">
-                  <div className="border border-[#d4c4b0]/50 rounded-sm p-4">
-                    <div className="text-center min-h-[100px] flex items-center justify-center">
-                      <p className="font-handwritten text-lg md:text-xl text-[#5c1a1a] leading-relaxed">
-                        {message || <span className="text-[#5c1a1a]/30">Your message here...</span>}
-                      </p>
-                    </div>
-                    <div className="mt-3 pt-3 border-t border-[#d4c4b0]/40 text-center">
-                      <p className="text-[#8b6b5c] text-xs tracking-[0.2em] uppercase">from {senderName}</p>
-                      <p className="font-display text-base text-[#5c1a1a] mt-1">to {recipientName}</p>
-                    </div>
-                  </div>
-                  {/* Will you be my valentine + buttons preview */}
-                  <p className="text-center text-[#5c1a1a] text-lg md:text-xl mt-5 font-display">will you be my valentine?</p>
-                  <div className="flex justify-center gap-3 mt-4">
-                    <span className="px-6 py-2 bg-[#5c1a1a] text-[#f5f0e8] rounded-sm text-sm font-medium">Yes</span>
-                    <span className="px-6 py-2 border border-[#5c1a1a]/30 text-[#5c1a1a]/50 rounded-sm text-sm font-medium">No</span>
-                  </div>
-                </div>
+              {/* Will you be my valentine + buttons preview */}
+              <p className="text-center text-[#f5f0e8] text-xl md:text-2xl mt-6 font-display">will you be my valentine?</p>
+              <div className="flex justify-center gap-4 mt-4">
+                <span className="px-8 py-3 bg-[#f5f0e8] text-[#5c1a1a] rounded-sm font-medium">Yes</span>
+                <span className="px-8 py-3 border border-[#f5f0e8]/40 text-[#f5f0e8]/50 rounded-sm font-medium">No</span>
               </div>
             </div>
           </div>
