@@ -9,24 +9,41 @@ function OnboardingDemo({ onComplete, onSkip }: { onComplete: () => void; onSkip
   const [noPosition, setNoPosition] = useState({ x: 0, y: 0 });
   const [noScale, setNoScale] = useState(1);
   const [attempts, setAttempts] = useState(0);
+  const [isFlying, setIsFlying] = useState(false);
 
   const escapeNo = useCallback(() => {
-    setAttempts(prev => prev + 1);
-    if (attempts < 2) {
-      setNoScale(prev => prev * 0.7);
-    } else {
+    const newAttempts = attempts + 1;
+    setAttempts(newAttempts);
+
+    if (newAttempts === 1) {
+      setNoScale(0.7);
+    } else if (newAttempts === 2) {
       setNoPosition({
-        x: (Math.random() - 0.5) * 120,
-        y: (Math.random() - 0.5) * 80,
+        x: (Math.random() - 0.5) * 100,
+        y: (Math.random() - 0.5) * 50,
       });
-      setNoScale(prev => Math.max(prev * 0.9, 0.4));
+      setNoScale(0.6);
+    } else {
+      setIsFlying(true);
     }
   }, [attempts]);
+
+  useEffect(() => {
+    if (!isFlying) return;
+    const interval = setInterval(() => {
+      setNoPosition({
+        x: (Math.random() - 0.5) * 200,
+        y: (Math.random() - 0.5) * 100,
+      });
+    }, 180);
+    return () => clearInterval(interval);
+  }, [isFlying]);
 
   const resetDemo = () => {
     setNoPosition({ x: 0, y: 0 });
     setNoScale(1);
     setAttempts(0);
+    setIsFlying(false);
   };
 
   const steps = [
@@ -34,12 +51,12 @@ function OnboardingDemo({ onComplete, onSkip }: { onComplete: () => void; onSkip
       title: "Here's how it works",
       content: (
         <div className="text-center">
-          <p className="text-gray-600 mb-6">
+          <p className="text-[#f5f0e8]/70 mb-8">
             You write a heartfelt message, and we'll create a beautiful card with a little twist...
           </p>
-          <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 max-w-sm mx-auto">
-            <p className="text-sm text-gray-400 mb-2">Preview</p>
-            <p className="font-handwritten text-2xl text-gray-700">
+          <div className="bg-[#f5f0e8] rounded-sm p-6 shadow-2xl max-w-sm mx-auto">
+            <p className="text-[#8b6b5c] text-xs tracking-[0.2em] uppercase mb-2">Preview</p>
+            <p className="font-handwritten text-2xl text-[#5c1a1a]">
               "Every moment with you feels like magic..."
             </p>
           </div>
@@ -47,26 +64,25 @@ function OnboardingDemo({ onComplete, onSkip }: { onComplete: () => void; onSkip
       ),
     },
     {
-      title: "The fun part",
+      title: "Afraid of rejection?",
       content: (
         <div className="text-center">
-          <p className="text-gray-600 mb-6">
-            When they try to click "No"... well, let's just say it's not that easy.
+          <p className="text-[#f5f0e8]/70 mb-8">
+            Don't worry—saying "No" is not that easy. Try clicking it.
           </p>
-          <div className="bg-white rounded-xl p-8 shadow-sm border border-gray-100 relative overflow-hidden min-h-[140px]">
-            <p className="text-sm text-gray-400 mb-4">Try hovering over "No"</p>
+          <div className="bg-[#f5f0e8] rounded-sm p-8 shadow-2xl relative overflow-hidden min-h-[160px]">
+            <p className="text-[#8b6b5c] text-xs tracking-[0.2em] uppercase mb-6">Try clicking "No"</p>
             <div className="flex justify-center items-center gap-4 relative">
-              <button className="px-6 py-2.5 bg-[#c45c5c] text-white rounded-full text-sm font-medium">
+              <button className="px-8 py-3 bg-[#5c1a1a] text-[#f5f0e8] rounded-sm font-medium">
                 Yes
               </button>
               <button
-                onMouseEnter={escapeNo}
-                onTouchStart={escapeNo}
+                onClick={escapeNo}
                 style={{
                   transform: `translate(${noPosition.x}px, ${noPosition.y}px) scale(${noScale})`,
-                  transition: 'transform 0.2s ease-out',
+                  transition: isFlying ? 'transform 0.12s ease-out' : 'transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)',
                 }}
-                className="px-6 py-2.5 bg-gray-200 text-gray-500 rounded-full text-sm font-medium"
+                className="px-8 py-3 bg-transparent border border-[#5c1a1a]/30 text-[#5c1a1a]/60 rounded-sm font-medium"
               >
                 No
               </button>
@@ -74,7 +90,7 @@ function OnboardingDemo({ onComplete, onSkip }: { onComplete: () => void; onSkip
             {attempts > 2 && (
               <button
                 onClick={resetDemo}
-                className="absolute bottom-2 right-2 text-xs text-gray-400 hover:text-gray-600"
+                className="absolute bottom-2 right-2 text-xs text-[#8b6b5c]/50 hover:text-[#8b6b5c]"
               >
                 reset
               </button>
@@ -86,36 +102,36 @@ function OnboardingDemo({ onComplete, onSkip }: { onComplete: () => void; onSkip
   ];
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4">
+    <main className="min-h-screen bg-[#5c1a1a] flex items-center justify-center p-4">
       <div className="w-full max-w-md">
-        <div className="text-center mb-8">
-          <h1 className="font-display text-3xl text-gray-800 mb-2">{steps[step].title}</h1>
-          <div className="flex justify-center gap-1.5 mt-4">
+        <div className="text-center mb-10">
+          <h1 className="font-display text-3xl md:text-4xl text-[#f5f0e8] mb-4">{steps[step].title}</h1>
+          <div className="flex justify-center gap-2 mt-4">
             {steps.map((_, i) => (
               <div
                 key={i}
                 className={`w-2 h-2 rounded-full transition-colors ${
-                  i === step ? 'bg-[#c45c5c]' : 'bg-gray-200'
+                  i === step ? 'bg-[#f5f0e8]' : 'bg-[#f5f0e8]/30'
                 }`}
               />
             ))}
           </div>
         </div>
 
-        <div className="mb-8">{steps[step].content}</div>
+        <div className="mb-10">{steps[step].content}</div>
 
         <div className="flex flex-col gap-3">
           {step < steps.length - 1 ? (
             <>
               <button
                 onClick={() => { resetDemo(); setStep(step + 1); }}
-                className="w-full py-3 bg-[#c45c5c] text-white rounded-full font-medium hover:bg-[#b54d4d] transition-colors"
+                className="w-full py-3 md:py-4 bg-[#f5f0e8] text-[#5c1a1a] rounded-sm font-medium hover:bg-white transition-colors shadow-lg"
               >
                 Next
               </button>
               <button
                 onClick={onSkip}
-                className="w-full py-3 text-gray-400 hover:text-gray-600 transition-colors text-sm"
+                className="w-full py-3 text-[#f5f0e8]/50 hover:text-[#f5f0e8]/80 transition-colors text-sm"
               >
                 Skip intro
               </button>
@@ -123,14 +139,14 @@ function OnboardingDemo({ onComplete, onSkip }: { onComplete: () => void; onSkip
           ) : (
             <button
               onClick={onComplete}
-              className="w-full py-3 bg-[#c45c5c] text-white rounded-full font-medium hover:bg-[#b54d4d] transition-colors"
+              className="w-full py-3 md:py-4 bg-[#f5f0e8] text-[#5c1a1a] rounded-sm font-medium hover:bg-white transition-colors shadow-lg"
             >
               Create my card
             </button>
           )}
         </div>
       </div>
-    </div>
+    </main>
   );
 }
 
@@ -141,27 +157,8 @@ function CardForm() {
   const [senderName, setSenderName] = useState('');
   const [recipientName, setRecipientName] = useState('');
   const [message, setMessage] = useState('');
-  const [image, setImage] = useState<File | null>(null);
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
-
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      if (file.size > 5 * 1024 * 1024) {
-        setError('Image must be less than 5MB');
-        return;
-      }
-      setImage(file);
-      setImagePreview(URL.createObjectURL(file));
-    }
-  };
-
-  const removeImage = () => {
-    setImage(null);
-    setImagePreview(null);
-  };
 
   const handleSubmit = async () => {
     setIsLoading(true);
@@ -172,9 +169,6 @@ function CardForm() {
       formData.append('senderName', senderName);
       formData.append('recipientName', recipientName);
       formData.append('message', message);
-      if (image) {
-        formData.append('image', image);
-      }
 
       const response = await fetch('/api/cards', {
         method: 'POST',
@@ -200,25 +194,25 @@ function CardForm() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
+    <main className="min-h-screen bg-[#5c1a1a] flex items-center justify-center p-4">
+      <div className={`w-full transition-all ${step === 2 ? 'max-w-3xl' : 'max-w-md'}`}>
         {/* Progress */}
-        <div className="flex items-center justify-between mb-8 px-4">
-          {[1, 2, 3].map((s) => (
+        <div className="flex items-center justify-center mb-10">
+          {[1, 2].map((s) => (
             <div key={s} className="flex items-center">
               <div
                 className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-colors ${
                   s <= step
-                    ? 'bg-[#c45c5c] text-white'
-                    : 'bg-gray-100 text-gray-400'
+                    ? 'bg-[#f5f0e8] text-[#5c1a1a]'
+                    : 'bg-[#f5f0e8]/20 text-[#f5f0e8]/50'
                 }`}
               >
                 {s}
               </div>
-              {s < 3 && (
+              {s < 2 && (
                 <div
-                  className={`w-16 sm:w-24 h-0.5 mx-2 transition-colors ${
-                    s < step ? 'bg-[#c45c5c]' : 'bg-gray-100'
+                  className={`w-16 sm:w-24 h-0.5 mx-3 transition-colors ${
+                    s < step ? 'bg-[#f5f0e8]' : 'bg-[#f5f0e8]/20'
                   }`}
                 />
               )}
@@ -229,16 +223,16 @@ function CardForm() {
         {/* Step 1: Names */}
         {step === 1 && (
           <div className="animate-fadeIn">
-            <h1 className="font-display text-3xl text-gray-800 text-center mb-2">
+            <h1 className="font-display text-3xl md:text-4xl text-[#f5f0e8] text-center mb-2">
               Who's this card for?
             </h1>
-            <p className="text-gray-500 text-center mb-8">
+            <p className="text-[#f5f0e8]/60 text-center mb-8">
               Let's start with the basics
             </p>
 
-            <div className="space-y-4">
+            <div className="bg-[#f5f0e8] rounded-sm p-6 md:p-8 shadow-2xl space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-[#5c1a1a] mb-2">
                   Your name
                 </label>
                 <input
@@ -247,12 +241,12 @@ function CardForm() {
                   onChange={(e) => setSenderName(e.target.value)}
                   placeholder="Enter your name"
                   maxLength={50}
-                  className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#c45c5c] focus:ring-1 focus:ring-[#c45c5c] focus:outline-none transition-colors bg-white"
+                  className="w-full px-4 py-3 rounded-sm border border-[#d4c4b0] focus:border-[#5c1a1a] focus:ring-1 focus:ring-[#5c1a1a] focus:outline-none transition-colors bg-white text-[#5c1a1a]"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-[#5c1a1a] mb-2">
                   Their name
                 </label>
                 <input
@@ -261,7 +255,7 @@ function CardForm() {
                   onChange={(e) => setRecipientName(e.target.value)}
                   placeholder="Enter their name"
                   maxLength={50}
-                  className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#c45c5c] focus:ring-1 focus:ring-[#c45c5c] focus:outline-none transition-colors bg-white"
+                  className="w-full px-4 py-3 rounded-sm border border-[#d4c4b0] focus:border-[#5c1a1a] focus:ring-1 focus:ring-[#5c1a1a] focus:outline-none transition-colors bg-white text-[#5c1a1a]"
                 />
               </div>
             </div>
@@ -271,80 +265,60 @@ function CardForm() {
         {/* Step 2: Message */}
         {step === 2 && (
           <div className="animate-fadeIn">
-            <h1 className="font-display text-3xl text-gray-800 text-center mb-2">
+            <h1 className="font-display text-3xl md:text-4xl text-[#f5f0e8] text-center mb-2">
               Write your message
             </h1>
-            <p className="text-gray-500 text-center mb-8">
-              What do you want to say to {recipientName}?
+            <p className="text-[#f5f0e8]/60 text-center mb-8">
+              "Will you be my valentine?" is already on the card
             </p>
 
-            <div>
-              <textarea
-                value={message}
-                onChange={(e) => setMessage(e.target.value)}
-                placeholder="Write something from the heart..."
-                maxLength={500}
-                rows={6}
-                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#c45c5c] focus:ring-1 focus:ring-[#c45c5c] focus:outline-none transition-colors resize-none bg-white"
-              />
-              <p className="text-xs text-gray-400 mt-2 text-right">
-                {message.length}/500
-              </p>
+            {/* Side by side layout on desktop */}
+            <div className="flex flex-col md:flex-row gap-6 md:items-start">
+              {/* Message input - left side */}
+              <div className="flex-1 order-2 md:order-1">
+                <div className="bg-[#f5f0e8] rounded-sm p-4 md:p-6 shadow-lg">
+                  <textarea
+                    value={message}
+                    onChange={(e) => setMessage(e.target.value)}
+                    placeholder="Write something from the heart..."
+                    maxLength={500}
+                    rows={6}
+                    className="w-full px-4 py-3 rounded-sm border border-[#d4c4b0] focus:border-[#5c1a1a] focus:ring-1 focus:ring-[#5c1a1a] focus:outline-none transition-colors resize-none bg-white text-[#5c1a1a] font-handwritten text-lg"
+                  />
+                  <p className="text-xs text-[#8b6b5c] mt-2 text-right">
+                    {message.length}/500
+                  </p>
+                </div>
+              </div>
+
+              {/* Live preview card - right side */}
+              <div className="flex-1 order-1 md:order-2">
+                <div className="bg-[#f5f0e8] rounded-sm p-4 md:p-5 shadow-2xl">
+                  <div className="border border-[#d4c4b0]/50 rounded-sm p-4">
+                    <div className="text-center min-h-[100px] flex items-center justify-center">
+                      <p className="font-handwritten text-lg md:text-xl text-[#5c1a1a] leading-relaxed">
+                        {message || <span className="text-[#5c1a1a]/30">Your message here...</span>}
+                      </p>
+                    </div>
+                    <div className="mt-3 pt-3 border-t border-[#d4c4b0]/40 text-center">
+                      <p className="text-[#8b6b5c] text-xs tracking-[0.2em] uppercase">from {senderName}</p>
+                      <p className="font-display text-base text-[#5c1a1a] mt-1">to {recipientName}</p>
+                    </div>
+                  </div>
+                  {/* Will you be my valentine + buttons preview */}
+                  <p className="text-center text-[#5c1a1a] text-lg md:text-xl mt-5 font-display">will you be my valentine?</p>
+                  <div className="flex justify-center gap-3 mt-4">
+                    <span className="px-6 py-2 bg-[#5c1a1a] text-[#f5f0e8] rounded-sm text-sm font-medium">Yes</span>
+                    <span className="px-6 py-2 border border-[#5c1a1a]/30 text-[#5c1a1a]/50 rounded-sm text-sm font-medium">No</span>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         )}
 
-        {/* Step 3: Photo (optional) */}
-        {step === 3 && (
-          <div className="animate-fadeIn">
-            <h1 className="font-display text-3xl text-gray-800 text-center mb-2">
-              Add a photo?
-            </h1>
-            <p className="text-gray-500 text-center mb-8">
-              This will be revealed when they say yes (optional)
-            </p>
-
-            {imagePreview ? (
-              <div className="flex flex-col items-center">
-                <div className="relative">
-                  <img
-                    src={imagePreview}
-                    alt="Preview"
-                    className="w-48 h-48 object-cover rounded-2xl border-2 border-gray-100"
-                  />
-                  <button
-                    type="button"
-                    onClick={removeImage}
-                    className="absolute -top-2 -right-2 w-7 h-7 bg-gray-800 text-white rounded-full text-sm hover:bg-gray-700 transition-colors flex items-center justify-center"
-                  >
-                    ×
-                  </button>
-                </div>
-              </div>
-            ) : (
-              <label className="block cursor-pointer">
-                <div className="border-2 border-dashed border-gray-200 rounded-2xl p-12 text-center hover:border-[#c45c5c] hover:bg-red-50/30 transition-colors">
-                  <div className="w-12 h-12 mx-auto mb-4 rounded-full bg-gray-100 flex items-center justify-center">
-                    <svg className="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                    </svg>
-                  </div>
-                  <p className="text-gray-500">Click to upload a photo</p>
-                  <p className="text-gray-400 text-sm mt-1">Max 5MB</p>
-                </div>
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleImageChange}
-                  className="hidden"
-                />
-              </label>
-            )}
-          </div>
-        )}
-
         {error && (
-          <p className="text-red-500 text-sm text-center mt-4">{error}</p>
+          <p className="text-red-300 text-sm text-center mt-4">{error}</p>
         )}
 
         {/* Navigation */}
@@ -352,42 +326,32 @@ function CardForm() {
           {step > 1 && (
             <button
               onClick={() => setStep(step - 1)}
-              className="px-6 py-3 text-gray-500 hover:text-gray-700 transition-colors"
+              className="px-6 py-3 text-[#f5f0e8]/60 hover:text-[#f5f0e8] transition-colors"
             >
               Back
             </button>
           )}
 
-          {step < 3 ? (
+          {step < 2 ? (
             <button
               onClick={() => setStep(step + 1)}
               disabled={!canProceed()}
-              className="flex-1 py-3 bg-[#c45c5c] text-white rounded-full font-medium hover:bg-[#b54d4d] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+              className="flex-1 py-3 md:py-4 bg-[#f5f0e8] text-[#5c1a1a] rounded-sm font-medium hover:bg-white transition-colors disabled:opacity-40 disabled:cursor-not-allowed shadow-lg"
             >
               Continue
             </button>
           ) : (
             <button
               onClick={handleSubmit}
-              disabled={isLoading}
-              className="flex-1 py-3 bg-[#c45c5c] text-white rounded-full font-medium hover:bg-[#b54d4d] transition-colors disabled:opacity-40"
+              disabled={isLoading || !canProceed()}
+              className="flex-1 py-3 md:py-4 bg-[#f5f0e8] text-[#5c1a1a] rounded-sm font-medium hover:bg-white transition-colors disabled:opacity-40 shadow-lg"
             >
               {isLoading ? 'Creating...' : 'Create card'}
             </button>
           )}
         </div>
-
-        {step === 3 && !image && (
-          <button
-            onClick={handleSubmit}
-            disabled={isLoading}
-            className="w-full mt-3 py-3 text-gray-400 hover:text-gray-600 transition-colors text-sm"
-          >
-            Skip photo
-          </button>
-        )}
       </div>
-    </div>
+    </main>
   );
 }
 

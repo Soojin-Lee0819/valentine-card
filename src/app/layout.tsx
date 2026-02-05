@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Playfair_Display, DM_Sans, Caveat } from "next/font/google";
+import { Playfair_Display, DM_Sans, Patrick_Hand } from "next/font/google";
 import "./globals.css";
 
 const playfair = Playfair_Display({
@@ -12,9 +12,10 @@ const dmSans = DM_Sans({
   subsets: ["latin"],
 });
 
-const caveat = Caveat({
-  variable: "--font-caveat",
+const patrickHand = Patrick_Hand({
+  variable: "--font-handwritten",
   subsets: ["latin"],
+  weight: "400",
 });
 
 export const metadata: Metadata = {
@@ -30,7 +31,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${playfair.variable} ${dmSans.variable} ${caveat.variable} antialiased`}
+        className={`${playfair.variable} ${dmSans.variable} ${patrickHand.variable} antialiased`}
       >
         {children}
       </body>

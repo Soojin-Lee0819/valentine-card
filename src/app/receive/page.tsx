@@ -1,16 +1,6 @@
 'use client';
 
-import { useState, useEffect, use, useCallback } from 'react';
-
-type Card = {
-  id: string;
-  slug: string;
-  sender_name: string;
-  recipient_name: string;
-  message: string;
-  response: 'yes' | 'no' | null;
-  responded_at: string | null;
-};
+import { useState, useEffect, useCallback } from 'react';
 
 function TypewriterText({ text, onComplete }: { text: string; onComplete?: () => void }) {
   const [displayedText, setDisplayedText] = useState('');
@@ -38,22 +28,29 @@ function TypewriterText({ text, onComplete }: { text: string; onComplete?: () =>
   );
 }
 
-export default function CardPage({ params }: { params: Promise<{ slug: string }> }) {
-  const { slug } = use(params);
-  const [card, setCard] = useState<Card | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-  const [responded, setResponded] = useState(false);
+const mockCard = {
+  id: 'test-123',
+  slug: 'test',
+  sender_name: 'Alex',
+  recipient_name: 'Jordan',
+  message: 'Every moment with you feels like magic. You make my heart skip a beat.',
+  response: null,
+  responded_at: null,
+};
 
+export default function ReceiveTestPage() {
   const [animStage, setAnimStage] = useState(0);
   const [showMessage, setShowMessage] = useState(false);
   const [showButtons, setShowButtons] = useState(false);
+  const [responded, setResponded] = useState(false);
 
   const [noScale, setNoScale] = useState(1);
   const [noPosition, setNoPosition] = useState({ x: 0, y: 0 });
   const [noAttempts, setNoAttempts] = useState(0);
   const [isFlying, setIsFlying] = useState(false);
   const [showTease, setShowTease] = useState(false);
+
+  const card = mockCard;
 
   const teaseMessages = [
     "Nice try!",
@@ -63,28 +60,6 @@ export default function CardPage({ params }: { params: Promise<{ slug: string }>
   ];
 
   useEffect(() => {
-    const fetchCard = async () => {
-      try {
-        const res = await fetch(`/api/cards/${slug}`);
-        if (!res.ok) throw new Error('Card not found');
-        const data = await res.json();
-        setCard(data);
-        if (data.response) {
-          setResponded(true);
-        }
-      } catch (err) {
-        setError('Card not found');
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchCard();
-  }, [slug]);
-
-  // Start animation after card loads
-  useEffect(() => {
-    if (!card || responded) return;
     const timers = [
       setTimeout(() => setAnimStage(1), 300),
       setTimeout(() => setAnimStage(2), 800),
@@ -95,25 +70,14 @@ export default function CardPage({ params }: { params: Promise<{ slug: string }>
       setTimeout(() => setShowMessage(true), 3300),
     ];
     return () => timers.forEach(clearTimeout);
-  }, [card, responded]);
+  }, []);
 
   const handleMessageComplete = () => {
     setShowButtons(true);
   };
 
-  const handleYes = async () => {
-    try {
-      const res = await fetch(`/api/cards/${slug}/respond`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ response: 'yes' }),
-      });
-      if (res.ok) {
-        setResponded(true);
-      }
-    } catch (err) {
-      console.error(err);
-    }
+  const handleYes = () => {
+    setResponded(true);
   };
 
   const escapeNo = useCallback(() => {
@@ -123,14 +87,17 @@ export default function CardPage({ params }: { params: Promise<{ slug: string }>
     if (newAttempts >= 3) setShowTease(true);
 
     if (newAttempts === 1) {
+      // First click: just shrink
       setNoScale(0.7);
     } else if (newAttempts === 2) {
+      // Second click: move away
       setNoPosition({
         x: (Math.random() - 0.5) * 120,
         y: (Math.random() - 0.5) * 60,
       });
       setNoScale(0.6);
     } else {
+      // Third+ click: fly around entire frame
       setIsFlying(true);
     }
   }, [noAttempts]);
@@ -138,6 +105,7 @@ export default function CardPage({ params }: { params: Promise<{ slug: string }>
   useEffect(() => {
     if (!isFlying) return;
     const interval = setInterval(() => {
+      // Move around entire viewport
       setNoPosition({
         x: (Math.random() - 0.5) * (window.innerWidth * 0.7),
         y: (Math.random() - 0.5) * (window.innerHeight * 0.5),
@@ -146,34 +114,26 @@ export default function CardPage({ params }: { params: Promise<{ slug: string }>
     return () => clearInterval(interval);
   }, [isFlying]);
 
-  const getCardReveal = () => {
-    if (animStage < 3) return 0;
-    if (animStage === 3) return 15;
-    if (animStage === 4) return 40;
-    if (animStage === 5) return 70;
-    return 100;
+  const reset = () => {
+    setAnimStage(0);
+    setResponded(false);
+    setShowMessage(false);
+    setShowButtons(false);
+    setNoScale(1);
+    setNoPosition({ x: 0, y: 0 });
+    setNoAttempts(0);
+    setIsFlying(false);
+    setShowTease(false);
+    setTimeout(() => {
+      setAnimStage(1);
+      setTimeout(() => setAnimStage(2), 500);
+      setTimeout(() => setAnimStage(3), 1000);
+      setTimeout(() => setAnimStage(4), 1500);
+      setTimeout(() => setAnimStage(5), 2000);
+      setTimeout(() => setAnimStage(6), 2500);
+      setTimeout(() => setShowMessage(true), 3000);
+    }, 300);
   };
-
-  const cardReveal = getCardReveal();
-
-  if (loading) {
-    return (
-      <main className="min-h-screen bg-[#5c1a1a] flex items-center justify-center">
-        <div className="text-[#f5f0e8]/50">Loading...</div>
-      </main>
-    );
-  }
-
-  if (error || !card) {
-    return (
-      <main className="min-h-screen bg-[#5c1a1a] flex items-center justify-center p-4">
-        <div className="text-center">
-          <h1 className="font-display text-2xl text-[#f5f0e8] mb-2">Card not found</h1>
-          <p className="text-[#f5f0e8]/60">This card may no longer exist.</p>
-        </div>
-      </main>
-    );
-  }
 
   if (responded) {
     return (
@@ -188,17 +148,38 @@ export default function CardPage({ params }: { params: Promise<{ slug: string }>
             <h1 className="font-display text-3xl md:text-4xl text-[#5c1a1a] mb-4">I knew you would say yes!</h1>
             <p className="text-[#8b6b5c] text-lg">Happy valentines :))</p>
           </div>
+          <button onClick={reset} className="mt-10 text-sm text-[#f5f0e8]/50 hover:text-[#f5f0e8]/80 transition-colors">
+            Reset demo
+          </button>
         </div>
       </main>
     );
   }
 
+  const getCardReveal = () => {
+    if (animStage < 3) return 0;
+    if (animStage === 3) return 15;
+    if (animStage === 4) return 40;
+    if (animStage === 5) return 70;
+    return 100;
+  };
+
+  const cardReveal = getCardReveal();
+
   return (
     <main className="min-h-screen bg-[#5c1a1a] flex items-center justify-center overflow-hidden relative p-4">
+      {/* Test badge */}
+      <div className="fixed top-4 left-1/2 -translate-x-1/2 text-xs text-[#f5f0e8]/40 bg-[#3d1010]/50 px-3 py-1 rounded-full z-50">
+        Test Mode
+      </div>
+      <button onClick={reset} className="fixed bottom-4 left-1/2 -translate-x-1/2 text-sm text-[#f5f0e8]/40 hover:text-[#f5f0e8]/70 transition-colors z-50">
+        Reset demo
+      </button>
+
       {/* Everything centered as a single unit */}
       <div className="relative flex flex-col items-center">
 
-        {/* POSTBOX - stays visible behind card */}
+        {/* POSTBOX - stays visible behind card, positioned relative to center */}
         <div
           className={`transition-all duration-700 ${
             animStage === 0 ? 'opacity-0 scale-95' : 'opacity-100 scale-100'

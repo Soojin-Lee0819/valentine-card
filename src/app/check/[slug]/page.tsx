@@ -46,7 +46,7 @@ export default function CheckPage({ params }: { params: Promise<{ slug: string }
 
   if (loading) {
     return (
-      <main className="min-h-screen bg-[#faf8f5] flex items-center justify-center">
+      <main className="min-h-screen bg-[#fff0f3] flex items-center justify-center">
         <div className="text-gray-400">Loading...</div>
       </main>
     );
@@ -54,7 +54,7 @@ export default function CheckPage({ params }: { params: Promise<{ slug: string }
 
   if (error || !card) {
     return (
-      <main className="min-h-screen bg-[#faf8f5] flex items-center justify-center p-4">
+      <main className="min-h-screen bg-[#fff0f3] flex items-center justify-center p-4">
         <div className="text-center">
           <h1 className="font-display text-2xl text-gray-700 mb-2">Card not found</h1>
         </div>
@@ -63,7 +63,7 @@ export default function CheckPage({ params }: { params: Promise<{ slug: string }
   }
 
   return (
-    <main className="min-h-screen bg-[#faf8f5] flex items-center justify-center p-4">
+    <main className="min-h-screen bg-[#fff0f3] flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 text-center">
           {card.response === null ? (
