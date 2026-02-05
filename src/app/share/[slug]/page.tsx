@@ -45,7 +45,7 @@ export default function SharePage({ params }: { params: Promise<{ slug: string }
   }, []);
 
   const cardLink = `${baseUrl}/card/${slug}`;
-  const shareText = `You've received a Valentine's card! 💌`;
+  const shareText = card ? `You received a surprise message from ${card.sender_name} 💌` : `You received a surprise message 💌`;
 
   const copyToClipboard = async () => {
     try {
